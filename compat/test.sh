@@ -25,6 +25,19 @@ echo "::endgroup::"
 
 cd compat-app
 
+echo "::group::Pin @types/node to TS-compatible version"
+# ng new resolves @types/node via a caret range that may pick a patch using
+# TS 5.2+ syntax (Symbol.dispose etc). Older Angular majors (14-16) ship TS
+# 4.7-5.0 and fail to PARSE those declarations even with skipLibCheck.
+# Pin via npm overrides to a pre-Symbol.dispose patch.
+node -e "
+const fs = require('fs');
+const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+pkg.overrides = Object.assign({}, pkg.overrides, { '@types/node': '18.16.0' });
+fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+"
+echo "::endgroup::"
+
 echo "::group::Install Angular deps"
 npm install
 echo "::endgroup::"
@@ -80,6 +93,9 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
+  // Explicit -- Angular 19+ defaults to true when omitted, which would
+  // collide with declaring this component in AppModule below.
+  standalone: false,
   template: `
     <div class="card-wrapper"></div>
     <form ngxCard container=".card-wrapper">
