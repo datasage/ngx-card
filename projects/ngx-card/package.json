@@ -1,6 +1,6 @@
 {
   "name": "@datasage/ngx-card",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Angular wrapper for card.js (animated credit-card preview). Fork of ihym/ngx-card, modernized for Angular 13+.",
   "keywords": [
     "angular",

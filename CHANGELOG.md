@@ -1,3 +1,22 @@
+# 0.0.0 (2026-05-03)
+
+
+### Bug Fixes
+
+* **app:** search for ContentChildren in descendants too ([1c78bd1](https://github.com/datasage/ngx-card/commit/1c78bd1d4a6718ff448db5e3dd9687fcd6e17132)), closes [#1](https://github.com/datasage/ngx-card/issues/1)
+* **build:** make ng-packagr build green and lock toolchain ([38d6d2b](https://github.com/datasage/ngx-card/commit/38d6d2bd5e94d83e688b360d5bc0084ab0402412))
+* **build:** regenerate package-lock.json after pinning @types/node ([41c7fbe](https://github.com/datasage/ngx-card/commit/41c7fbe2df209d423cb743e2ceabd27e63d84618))
+
+
+### Features
+
+* **app:** add card module ([9f42383](https://github.com/datasage/ngx-card/commit/9f423837e7af4e981a1388ebcf06b2913155923a))
+* **app:** relax card dependency ([dbd839c](https://github.com/datasage/ngx-card/commit/dbd839cedaef516d9ad15a42d66264360deab396))
+* **lib:** bundle card.js as a regular dependency ([78d14bf](https://github.com/datasage/ngx-card/commit/78d14bfa9fd864ae7a85fb2f80bed1c0a2f1950b))
+* **lib:** modernize directives for Angular 13 with backward-compat selectors ([4141e16](https://github.com/datasage/ngx-card/commit/4141e1653bdc8eed582ffd7e49d2e71e3fbb3e91))
+
+
+
 # Changelog
 
 This file is regenerated automatically by `conventional-changelog` during the release workflow. Pre-1.0 history (Angular 2–4 era) is available in the git history.
