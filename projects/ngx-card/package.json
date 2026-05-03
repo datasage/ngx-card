@@ -1,0 +1,28 @@
+{
+  "name": "ngx-card",
+  "version": "1.0.0",
+  "description": "Angular wrapper for card.js (animated credit-card preview)",
+  "keywords": [
+    "angular",
+    "card",
+    "credit-card",
+    "card.js"
+  ],
+  "author": "Vasilis Diakomanolis <b.diakomanolis@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ihym/ngx-card.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ihym/ngx-card/issues"
+  },
+  "homepage": "https://github.com/ihym/ngx-card#readme",
+  "sideEffects": false,
+  "peerDependencies": {
+    "@angular/core": ">=13.0.0 <14.0.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  }
+}

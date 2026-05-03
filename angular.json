@@ -1,0 +1,36 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "ngx-card": {
+      "projectType": "library",
+      "root": "projects/ngx-card",
+      "sourceRoot": "projects/ngx-card/src",
+      "prefix": "ngxCard",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/ngx-card/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ngx-card/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ngx-card/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["projects/ngx-card/**/*.ts"]
+          }
+        }
+      }
+    }
+  }
+}
