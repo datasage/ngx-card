@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Scaffolds a minimal Angular app at the given major version, installs
-# @datasage/ngx-card, replaces the default scaffold with an NgModule-based
-# fixture that exercises CardModule, and runs a production build.
+# @datasage/ngx-card, replaces the default scaffold with a standalone-
+# component fixture that exercises CardModule, and runs a production
+# build.
 #
 # Usage: bash compat/test.sh <angular-major>
 # Example: bash compat/test.sh 17
@@ -38,6 +39,29 @@ fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
 "
 echo "::endgroup::"
 
+echo "::group::Register card.css in angular.json#styles"
+# card@2.5.x's lib/card.js does `require('./card.css')` at module top level
+# for runtime style injection. Angular 14-16's webpack browser builder fails
+# to parse the CSS without an explicit loader. Adding it to angular.json's
+# styles array hands it to Angular CLI's stylesheet pipeline (handled by
+# both webpack browser builder and esbuild application builder).
+node -e "
+const fs = require('fs');
+const config = JSON.parse(fs.readFileSync('angular.json', 'utf8'));
+const cardCss = 'node_modules/card/lib/card.css';
+for (const projName of Object.keys(config.projects || {})) {
+  const arch = (config.projects[projName].architect || {}).build;
+  if (!arch) continue;
+  for (const opts of [arch.options, ...(Object.values(arch.configurations || {}))]) {
+    if (!opts) continue;
+    opts.styles = opts.styles || [];
+    if (!opts.styles.includes(cardCss)) opts.styles.push(cardCss);
+  }
+}
+fs.writeFileSync('angular.json', JSON.stringify(config, null, 2));
+"
+echo "::endgroup::"
+
 echo "::group::Install Angular deps"
 npm install
 echo "::endgroup::"
@@ -59,43 +83,29 @@ fi
 npm install @datasage/ngx-card --legacy-peer-deps
 echo "::endgroup::"
 
-echo "::group::Replace fixture with NgModule consumer"
-# Wipe whatever the scaffold generated (standalone-default since Angular 17+)
-# and write a deterministic NgModule-based fixture that works on every major.
+echo "::group::Replace fixture with standalone CardModule consumer"
+# Standalone bootstrap works on Angular 14.1+ (which is every version we
+# test). Avoids needing @angular/platform-browser-dynamic (dropped from
+# ng new defaults in Angular 20+) and sidesteps the standalone-default
+# behaviour change in Angular 19+.
 rm -rf src/app
 mkdir -p src/app
 
 cat > src/main.ts <<'EOF'
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { AppModule } from './app/app.module';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { AppComponent } from './app/app.component';
 
-platformBrowserDynamic()
-  .bootstrapModule(AppModule)
-  .catch((err) => console.error(err));
-EOF
-
-cat > src/app/app.module.ts <<'EOF'
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { CardModule } from '@datasage/ngx-card';
-import { AppComponent } from './app.component';
-
-@NgModule({
-  imports: [BrowserModule, CardModule],
-  declarations: [AppComponent],
-  bootstrap: [AppComponent],
-})
-export class AppModule {}
+bootstrapApplication(AppComponent).catch((err) => console.error(err));
 EOF
 
 cat > src/app/app.component.ts <<'EOF'
 import { Component } from '@angular/core';
+import { CardModule } from '@datasage/ngx-card';
 
 @Component({
   selector: 'app-root',
-  // Explicit -- Angular 19+ defaults to true when omitted, which would
-  // collide with declaring this component in AppModule below.
-  standalone: false,
+  standalone: true,
+  imports: [CardModule],
   template: `
     <div class="card-wrapper"></div>
     <form ngxCard container=".card-wrapper">
