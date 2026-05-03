@@ -1,3 +1,4 @@
+/// <reference path="./card.types.d.ts" />
 import {
   AfterViewInit,
   ContentChildren,

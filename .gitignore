@@ -2,6 +2,7 @@
 /dist
 /out-tsc
 /tmp
+/.angular/cache
 
 # Dependencies
 /node_modules

@@ -3,5 +3,6 @@
   "dest": "../../dist/ngx-card",
   "lib": {
     "entryFile": "src/public-api.ts"
-  }
+  },
+  "allowedNonPeerDependencies": ["card"]
 }

@@ -16,6 +16,18 @@
       "rules": {
         "@angular-eslint/directive-selector": "off",
         "@angular-eslint/component-selector": "off",
+        "@angular-eslint/directive-class-suffix": [
+          "error",
+          { "suffixes": ["Directive", "Template", "Card"] }
+        ],
+        "@angular-eslint/no-input-rename": [
+          "error",
+          { "allowedNames": ["card-width"] }
+        ],
+        "@typescript-eslint/triple-slash-reference": [
+          "error",
+          { "path": "always", "types": "prefer-import", "lib": "always" }
+        ],
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-non-null-assertion": "off"
