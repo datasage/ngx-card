@@ -1,3 +1,12 @@
+# [0.0.0](https://github.com/datasage/ngx-card/compare/v1.0.2...v0.0.0) (2026-05-03)
+
+
+### Bug Fixes
+
+* **lib:** polyfill 'global' for card.js and load it via dynamic import ([2520805](https://github.com/datasage/ngx-card/commit/2520805d96873d7c2f75d97671cbd4d7795e104f))
+
+
+
 # [0.0.0](https://github.com/datasage/ngx-card/compare/v1.0.1...v0.0.0) (2026-05-03)
 
 
