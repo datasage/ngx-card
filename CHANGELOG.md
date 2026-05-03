@@ -1,55 +1,25 @@
-<a name="0.2.4"></a>
-## [0.2.4](https://github.com/ihym/ngx-card/compare/v0.2.3...v0.2.4) (2017-08-22)
+# Changelog
 
+This file is regenerated automatically by `conventional-changelog` during the release workflow. Pre-1.0 history (Angular 2–4 era) is available in the git history.
 
+## Unreleased
 
-<a name="0.2.3"></a>
-## [0.2.3](https://github.com/ihym/ngx-card/compare/v0.2.2...v0.2.3) (2017-08-22)
+### BREAKING CHANGES
 
-
-### Bug Fixes
-
-* **app:** search for ContentChildren in descendants too ([1c78bd1](https://github.com/ihym/ngx-card/commit/1c78bd1)), closes [#1](https://github.com/ihym/ngx-card/issues/1)
-
-
-
-<a name="0.2.2"></a>
-## [0.2.2](https://github.com/ihym/ngx-card/compare/v0.2.1...v0.2.2) (2017-08-12)
-
-
-
-<a name="0.2.1"></a>
-## [0.2.1](https://github.com/ihym/ngx-card/compare/v0.2.0...v0.2.1) (2017-08-01)
-
-
-
-<a name="0.2.0"></a>
-# [0.2.0](https://github.com/ihym/ngx-card/compare/v0.1.2...v0.2.0) (2017-08-01)
-
+- Library now requires Angular 13 or newer. The 0.x line targeted Angular 2–4 and is no longer maintained.
+- Build output is the Angular Package Format (FESM2020 + UMD + types) produced by `ng-packagr`. The old `bundles/ngx-card.umd.js` path no longer exists; consumers should import via `'ngx-card'` (not `'ngx-card/ngx-card'`).
+- Source moved from `src/` to `projects/ngx-card/src/lib/`.
 
 ### Features
 
-* **app:** relax card dependency ([dbd839c](https://github.com/ihym/ngx-card/commit/dbd839c))
+- Each directive now accepts both the prefixed (`ngxCard*`) and the legacy unprefixed (`card*`) selector. Existing markup keeps working.
+- `NgxCard` disposes the underlying card.js instance in `ngOnDestroy`.
+- Strict types on every `@Input`; `NgxCardMessages` and `NgxCardPlaceholders` interfaces exported.
+- Field-template directives now share an abstract `NgxCardFieldTemplate` base, also exported for advanced consumers.
 
+### Build
 
-
-<a name="0.1.2"></a>
-## [0.1.2](https://github.com/ihym/ngx-card/compare/v0.1.0...v0.1.2) (2017-08-01)
-
-
-
-<a name="0.1.1"></a>
-## [0.1.1](https://github.com/ihym/ngx-card/compare/v0.1.0...v0.1.1) (2017-07-31)
-
-
-
-<a name="0.1.0"></a>
-# 0.1.0 (2017-07-30)
-
-
-### Features
-
-* **app:** add card module ([9f42383](https://github.com/ihym/ngx-card/commit/9f42383))
-
-
-
+- Replaced gulp + custom webpack bundle with Angular CLI + ng-packagr.
+- Replaced tslint with `@angular-eslint`.
+- Replaced Travis CI (Node 6) with GitHub Actions (Node 16/18 matrix).
+- Manual-dispatch `Cut Release` workflow handles version bump, changelog, build, tag, npm publish, and GitHub Release.
