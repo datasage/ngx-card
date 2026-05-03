@@ -1,4 +1,3 @@
-/// <reference path="./card.types.d.ts" />
 import {
   AfterViewInit,
   ContentChildren,
@@ -8,6 +7,7 @@ import {
   OnDestroy,
   QueryList,
 } from '@angular/core';
+import './card.types';
 import Card from 'card';
 import {
   NgxCardCvcTemplate,
