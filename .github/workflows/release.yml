@@ -1,0 +1,92 @@
+name: Cut Release
+
+# Manual-dispatch release for the ngx-card library.
+#
+# Library major version maps to Angular minimum-supported major
+# (1.x -> Angular 13, 2.x -> Angular 14, ...). One library major can
+# span multiple Angular versions when compatible; only bump major when
+# the floor Angular version actually rises.
+#
+# Branch strategy:
+#   - master holds the active/latest major
+#   - When the floor rises, cut a maintenance branch (e.g. 1.x) BEFORE
+#     merging the floor-raising PR to master, then dispatch this
+#     workflow from that branch for back-port releases.
+#
+# This workflow runs against the ref it is dispatched from, so cutting
+# a 1.0.5 from `1.x` and a 2.1.0 from `master` is the same dispatch.
+#
+# Required repo secret:
+#   NPM_TOKEN -- automation token with publish rights for `ngx-card`.
+
+on:
+  workflow_dispatch:
+    inputs:
+      type:
+        description: 'Semver bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump library version
+        id: bump
+        run: |
+          cd projects/ngx-card
+          NEW_VERSION=$(npm version ${{ inputs.type }} --no-git-tag-version)
+          NEW_VERSION="${NEW_VERSION#v}"
+          echo "version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+          echo "Bumped to $NEW_VERSION"
+
+      - name: Regenerate CHANGELOG
+        run: npx --yes conventional-changelog-cli -p angular -i CHANGELOG.md -s
+
+      - name: Build library
+        run: npm run build
+
+      - name: Commit, tag, push
+        env:
+          VERSION: ${{ steps.bump.outputs.version }}
+        run: |
+          git add projects/ngx-card/package.json CHANGELOG.md
+          git commit -m "chore(release): $VERSION"
+          git tag "v$VERSION"
+          git push origin HEAD --follow-tags
+
+      - name: Publish to npm
+        run: npm publish dist/ngx-card --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.bump.outputs.version }}
+          name: v${{ steps.bump.outputs.version }}
+          generate_release_notes: true
