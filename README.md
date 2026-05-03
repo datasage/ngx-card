@@ -35,11 +35,7 @@ npm install --save @datasage/ngx-card
 
 GitHub Packages allows anonymous reads of public packages, so no `npm login` is required for installation.
 
-`@datasage/ngx-card` does not bundle [card.js](https://github.com/jessepollak/card) — load it yourself, e.g.:
-
-```html
-<script src="https://unpkg.com/card@2.3.0/dist/card.js"></script>
-```
+[card.js](https://github.com/jessepollak/card) is a regular runtime dependency (`card@^2.5.4`) and is resolved/bundled by your application's bundler — no `<script>` tag, no global, no jQuery (the `card` package dropped jQuery in 2.5.x).
 
 ## Usage
 

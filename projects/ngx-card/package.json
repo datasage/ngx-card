@@ -33,6 +33,7 @@
     "@angular/core": ">=13.0.0 <14.0.0"
   },
   "dependencies": {
+    "card": "^2.5.4",
     "tslib": "^2.3.0"
   }
 }

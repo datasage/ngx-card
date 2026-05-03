@@ -7,6 +7,7 @@ import {
   OnDestroy,
   QueryList,
 } from '@angular/core';
+import Card from 'card';
 import {
   NgxCardCvcTemplate,
   NgxCardExpiryTemplate,
@@ -26,33 +27,6 @@ export interface NgxCardPlaceholders {
   expiry: string;
   cvc: string;
 }
-
-interface CardOptions {
-  form: HTMLElement;
-  container?: string | HTMLElement;
-  width?: number;
-  formSelectors: {
-    numberInput: string;
-    expiryInput: string;
-    cvcInput: string;
-    nameInput: string;
-  };
-  formatting: boolean;
-  messages: NgxCardMessages;
-  placeholders: NgxCardPlaceholders;
-  masks?: Record<string, unknown>;
-  debug: boolean;
-}
-
-interface CardInstance {
-  destroy?(): void;
-}
-
-interface CardCtor {
-  new (opts: CardOptions): CardInstance;
-}
-
-declare const Card: CardCtor;
 
 const DEFAULT_PLACEHOLDERS: NgxCardPlaceholders = {
   number: '•••• •••• •••• ••••',
@@ -104,7 +78,7 @@ export class NgxCard implements AfterViewInit, OnDestroy {
   @ContentChildren(NgxCardCvcTemplate, { descendants: true })
   cvcs!: QueryList<NgxCardCvcTemplate>;
 
-  private card?: CardInstance;
+  private card?: Card;
 
   constructor(private element: ElementRef<HTMLElement>) {}
 
