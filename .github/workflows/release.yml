@@ -78,7 +78,8 @@ jobs:
         run: |
           git add projects/ngx-card/package.json CHANGELOG.md
           git commit -m "chore(release): $VERSION"
-          git tag "v$VERSION"
+          # Annotated tag (-a) so `git push --follow-tags` actually pushes it.
+          git tag -a "v$VERSION" -m "v$VERSION"
           git push origin HEAD --follow-tags
 
       - name: Publish to GitHub Packages
