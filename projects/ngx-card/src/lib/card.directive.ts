@@ -7,8 +7,8 @@ import {
   OnDestroy,
   QueryList,
 } from '@angular/core';
+import type CardCtor from 'card';
 import './card.types';
-import Card from 'card';
 import {
   NgxCardCvcTemplate,
   NgxCardExpiryTemplate,
@@ -29,6 +29,8 @@ export interface NgxCardPlaceholders {
   cvc: string;
 }
 
+type CardInstance = InstanceType<typeof CardCtor>;
+
 const DEFAULT_PLACEHOLDERS: NgxCardPlaceholders = {
   number: '•••• •••• •••• ••••',
   name: 'Full Name',
@@ -40,6 +42,15 @@ const DEFAULT_MESSAGES: NgxCardMessages = {
   validDate: 'valid\nthru',
   monthYear: 'month/year',
 };
+
+// card.js (compiled from CoffeeScript) references `global` at module top
+// level. Browsers don't define `global`. Set it before card.js evaluates.
+function ensureCardJsGlobal(): void {
+  const g = globalThis as { global?: unknown };
+  if (typeof g.global === 'undefined') {
+    g.global = globalThis;
+  }
+}
 
 @Directive({ selector: '[ngxCard],[card]' })
 export class NgxCard implements AfterViewInit, OnDestroy {
@@ -79,30 +90,39 @@ export class NgxCard implements AfterViewInit, OnDestroy {
   @ContentChildren(NgxCardCvcTemplate, { descendants: true })
   cvcs!: QueryList<NgxCardCvcTemplate>;
 
-  private card?: Card;
+  private card?: CardInstance;
+  private destroyed = false;
 
   constructor(private element: ElementRef<HTMLElement>) {}
 
   ngAfterViewInit(): void {
-    this.card = new Card({
-      form: this.element.nativeElement,
-      container: this.container,
-      width: this.width,
-      formSelectors: {
-        numberInput: this.selectorsFor(this.numbers),
-        expiryInput: this.selectorsFor(this.expiries),
-        cvcInput: this.selectorsFor(this.cvcs),
-        nameInput: this.selectorsFor(this.names),
-      },
-      formatting: this.formatting,
-      messages: this.messages,
-      placeholders: this.placeholders,
-      masks: this.masks,
-      debug: this.debug,
+    ensureCardJsGlobal();
+    void import('card').then((mod) => {
+      if (this.destroyed) {
+        return;
+      }
+      const Card = mod.default;
+      this.card = new Card({
+        form: this.element.nativeElement,
+        container: this.container,
+        width: this.width,
+        formSelectors: {
+          numberInput: this.selectorsFor(this.numbers),
+          expiryInput: this.selectorsFor(this.expiries),
+          cvcInput: this.selectorsFor(this.cvcs),
+          nameInput: this.selectorsFor(this.names),
+        },
+        formatting: this.formatting,
+        messages: this.messages,
+        placeholders: this.placeholders,
+        masks: this.masks,
+        debug: this.debug,
+      });
     });
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
     this.card?.destroy?.();
     this.card = undefined;
   }
