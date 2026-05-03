@@ -1,0 +1,64 @@
+name: Compat Matrix
+
+# Tests @datasage/ngx-card against released Angular major versions by
+# scaffolding a fresh app at each major, installing the published library,
+# and running a production build. Catches build-time incompatibilities
+# (peer dep mismatch, type errors, build pipeline breaks). Does NOT catch
+# runtime regressions -- those need a real smoke test (Karma/Cypress/Vitest).
+#
+# Runs weekly on a schedule. Dispatch manually after a new Angular major
+# release; add a new row to the matrix below to extend coverage.
+#
+# Each matrix cell pairs an Angular major with a Node version that
+# satisfies that Angular CLI's engines.node range:
+#   - Angular 14-16 -> Node 18
+#   - Angular 17-19 -> Node 20
+#   - Angular 20+   -> Node 22
+#
+# Auth: GITHUB_TOKEN (auto-provided) for installing the scoped package
+# from GitHub Packages.
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  compat:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - angular: '14'
+            node: '18'
+          - angular: '15'
+            node: '18'
+          - angular: '16'
+            node: '18'
+          - angular: '17'
+            node: '20'
+          - angular: '18'
+            node: '20'
+          - angular: '19'
+            node: '20'
+          - angular: '20'
+            node: '22'
+          - angular: '21'
+            node: '22'
+          - angular: '22'
+            node: '22'
+    name: Angular ${{ matrix.angular }} (Node ${{ matrix.node }})
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}.x
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@datasage'
+
+      - name: Run compat test
+        run: bash compat/test.sh ${{ matrix.angular }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
