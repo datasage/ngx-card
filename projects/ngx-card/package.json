@@ -1,24 +1,34 @@
 {
-  "name": "ngx-card",
+  "name": "@datasage/ngx-card",
   "version": "1.0.0",
-  "description": "Angular wrapper for card.js (animated credit-card preview)",
+  "description": "Angular wrapper for card.js (animated credit-card preview). Fork of ihym/ngx-card, modernized for Angular 13+.",
   "keywords": [
     "angular",
     "card",
     "credit-card",
     "card.js"
   ],
-  "author": "Vasilis Diakomanolis <b.diakomanolis@gmail.com>",
+  "author": "Dan Johansson <djohansson@trackhospitality.com>",
+  "contributors": [
+    {
+      "name": "Vasilis Diakomanolis",
+      "email": "b.diakomanolis@gmail.com",
+      "url": "https://github.com/ihym"
+    }
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ihym/ngx-card.git"
+    "url": "git+https://github.com/datasage/ngx-card.git"
   },
   "bugs": {
-    "url": "https://github.com/ihym/ngx-card/issues"
+    "url": "https://github.com/datasage/ngx-card/issues"
   },
-  "homepage": "https://github.com/ihym/ngx-card#readme",
+  "homepage": "https://github.com/datasage/ngx-card#readme",
   "sideEffects": false,
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "peerDependencies": {
     "@angular/core": ">=13.0.0 <14.0.0"
   },

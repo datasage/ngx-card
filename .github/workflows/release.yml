@@ -1,6 +1,6 @@
 name: Cut Release
 
-# Manual-dispatch release for the ngx-card library.
+# Manual-dispatch release for the @datasage/ngx-card library.
 #
 # Library major version maps to Angular minimum-supported major
 # (1.x -> Angular 13, 2.x -> Angular 14, ...). One library major can
@@ -16,8 +16,8 @@ name: Cut Release
 # This workflow runs against the ref it is dispatched from, so cutting
 # a 1.0.5 from `1.x` and a 2.1.0 from `master` is the same dispatch.
 #
-# Required repo secret:
-#   NPM_TOKEN -- automation token with publish rights for `ngx-card`.
+# Publishing target: GitHub Packages npm registry. The auto-provided
+# GITHUB_TOKEN handles auth -- no extra secrets required.
 
 on:
   workflow_dispatch:
@@ -37,6 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      packages: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -45,7 +46,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18.x
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@datasage'
           cache: 'npm'
 
       - run: npm ci
@@ -79,10 +81,10 @@ jobs:
           git tag "v$VERSION"
           git push origin HEAD --follow-tags
 
-      - name: Publish to npm
-        run: npm publish dist/ngx-card --access public
+      - name: Publish to GitHub Packages
+        run: npm publish dist/ngx-card
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
