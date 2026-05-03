@@ -1,3 +1,12 @@
+# [0.0.0](https://github.com/datasage/ngx-card/compare/v1.0.1...v0.0.0) (2026-05-03)
+
+
+### Bug Fixes
+
+* **lib:** stop leaking project-relative path into published d.ts ([6269d1d](https://github.com/datasage/ngx-card/commit/6269d1dba85df8ca6b067fad5e24bb41b5d7948c))
+
+
+
 # 0.0.0 (2026-05-03)
 
 
