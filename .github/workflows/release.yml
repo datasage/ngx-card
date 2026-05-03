@@ -82,7 +82,9 @@ jobs:
           git push origin HEAD --follow-tags
 
       - name: Publish to GitHub Packages
-        run: npm publish dist/ngx-card
+        # Leading ./ disambiguates: npm 10+ otherwise parses "dist/ngx-card"
+        # as a GitHub shortform spec (owner=dist, repo=ngx-card).
+        run: npm publish ./dist/ngx-card
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

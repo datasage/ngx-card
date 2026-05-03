@@ -1,0 +1,51 @@
+name: Publish Existing Tag
+
+# Manual-dispatch fallback for when the Cut Release workflow has already
+# bumped/committed/tagged but failed before publishing (or when a previous
+# publish needs to be re-attempted from a known-good tag).
+#
+# Checks out the supplied tag, builds, publishes to GitHub Packages, and
+# creates the GitHub Release. Does NOT bump the version or push commits.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to publish (e.g. v1.0.1)'
+        required: true
+        type: string
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@datasage'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Publish to GitHub Packages
+        run: npm publish ./dist/ngx-card
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          name: ${{ inputs.tag }}
+          generate_release_notes: true
