@@ -30,7 +30,20 @@ npm install
 echo "::endgroup::"
 
 echo "::group::Install @datasage/ngx-card"
-npm install @datasage/ngx-card
+# Two-layer compat signal:
+#   1. Does the library's peer dep range permit clean installation?
+#      (informational -- if narrow, widen projects/ngx-card/package.json
+#      peerDependencies once the build below is green.)
+#   2. Does the code itself compile and build in this Angular version?
+# We use --legacy-peer-deps to bypass (1) so we can still test (2) when
+# the peer dep range is too narrow.
+if npm install @datasage/ngx-card --dry-run >/dev/null 2>&1; then
+  echo "::notice title=Peer dep OK::Library installs cleanly on Angular $ANGULAR_MAJOR; peer dep range already permits this version."
+else
+  echo "::warning title=Peer dep narrow::Clean install on Angular $ANGULAR_MAJOR is blocked by peer dep range. If the build below is green, widen projects/ngx-card/package.json peerDependencies and ship a patch release."
+fi
+
+npm install @datasage/ngx-card --legacy-peer-deps
 echo "::endgroup::"
 
 echo "::group::Replace fixture with NgModule consumer"

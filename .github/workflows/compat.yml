@@ -1,10 +1,23 @@
 name: Compat Matrix
 
 # Tests @datasage/ngx-card against released Angular major versions by
-# scaffolding a fresh app at each major, installing the published library,
-# and running a production build. Catches build-time incompatibilities
-# (peer dep mismatch, type errors, build pipeline breaks). Does NOT catch
-# runtime regressions -- those need a real smoke test (Karma/Cypress/Vitest).
+# scaffolding a fresh app at each major, installing the published library
+# (with --legacy-peer-deps to bypass narrow peer-dep ranges), and running
+# a production build.
+#
+# Two distinct signals come out of each cell:
+#   - Notice "Peer dep OK"     -> library installs cleanly, peer dep range
+#                                 already permits this version. No action.
+#   - Warning "Peer dep narrow"-> install would fail without --legacy-peer-deps,
+#                                 but the build still succeeded. Widen the
+#                                 library's peerDependencies to include this
+#                                 Angular major, ship a patch release.
+#   - Cell failed              -> code-level incompatibility. Investigate;
+#                                 may indicate the floor needs to rise (cut
+#                                 a new library major).
+#
+# This is BUILD-TIME compat only. Runtime regressions need a real smoke
+# test (Karma/Cypress/Vitest), deferred to a future Angular version.
 #
 # Runs weekly on a schedule. Dispatch manually after a new Angular major
 # release; add a new row to the matrix below to extend coverage.
