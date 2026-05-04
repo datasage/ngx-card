@@ -19,6 +19,8 @@ Library major versions track the minimum supported Angular version:
 
 A single library major can span multiple Angular majors when no API change forces the floor up. Pick the major matching your Angular floor; the upper bound widens over patch releases as new Angular majors are verified.
 
+For the strategic plan — when and why we'd cut new majors, the adoption ladder for Angular features (standalone, signals, etc.), and the "stay on 1.x indefinitely unless concrete demand forces a bump" default posture — see [`ROADMAP.md`](./ROADMAP.md).
+
 ## Installation
 
 This package is published to **GitHub Packages**, not npmjs.com. Add the registry mapping to a project-local `.npmrc` (or your `~/.npmrc`):
