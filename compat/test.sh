@@ -43,6 +43,23 @@ echo "::group::Install Angular deps"
 npm install
 echo "::endgroup::"
 
+echo "::group::Install @datasage/ngx-card"
+# Two-layer compat signal:
+#   1. Does the library's peer dep range permit clean installation?
+#      (informational -- if narrow, widen projects/ngx-card/package.json
+#      peerDependencies once the build below is green.)
+#   2. Does the code itself compile and build in this Angular version?
+# We use --legacy-peer-deps to bypass (1) so we can still test (2) when
+# the peer dep range is too narrow.
+if npm install @datasage/ngx-card --dry-run >/dev/null 2>&1; then
+  echo "::notice title=Peer dep OK::Library installs cleanly on Angular $ANGULAR_MAJOR; peer dep range already permits this version."
+else
+  echo "::warning title=Peer dep narrow::Clean install on Angular $ANGULAR_MAJOR is blocked by peer dep range. If the build below is green, widen projects/ngx-card/package.json peerDependencies and ship a patch release."
+fi
+
+npm install @datasage/ngx-card --legacy-peer-deps
+echo "::endgroup::"
+
 echo "::group::Stage card.css from node_modules into src/ and register it"
 # card@2.5.x's lib/card.js does `require('./card.css')` at module top level
 # for runtime style injection. The webpack browser builder used by Angular
@@ -50,7 +67,8 @@ echo "::group::Stage card.css from node_modules into src/ and register it"
 # node_modules in angular.json#styles still fails on 15/16 even though the
 # path is tagged `?ngGlobalStyle` (the loader chain skips full CSS handling
 # for node_modules entries). Copying the file into src/ sidesteps the
-# node_modules-specific path entirely.
+# node_modules-specific path entirely. Has to run AFTER the ngx-card
+# install since `card` arrives transitively.
 mkdir -p src/styles
 cp node_modules/card/lib/card.css src/styles/card.css
 node -e "
@@ -68,23 +86,6 @@ for (const projName of Object.keys(config.projects || {})) {
 }
 fs.writeFileSync('angular.json', JSON.stringify(config, null, 2));
 "
-echo "::endgroup::"
-
-echo "::group::Install @datasage/ngx-card"
-# Two-layer compat signal:
-#   1. Does the library's peer dep range permit clean installation?
-#      (informational -- if narrow, widen projects/ngx-card/package.json
-#      peerDependencies once the build below is green.)
-#   2. Does the code itself compile and build in this Angular version?
-# We use --legacy-peer-deps to bypass (1) so we can still test (2) when
-# the peer dep range is too narrow.
-if npm install @datasage/ngx-card --dry-run >/dev/null 2>&1; then
-  echo "::notice title=Peer dep OK::Library installs cleanly on Angular $ANGULAR_MAJOR; peer dep range already permits this version."
-else
-  echo "::warning title=Peer dep narrow::Clean install on Angular $ANGULAR_MAJOR is blocked by peer dep range. If the build below is green, widen projects/ngx-card/package.json peerDependencies and ship a patch release."
-fi
-
-npm install @datasage/ngx-card --legacy-peer-deps
 echo "::endgroup::"
 
 echo "::group::Replace fixture with standalone CardModule consumer"
