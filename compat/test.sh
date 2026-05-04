@@ -39,16 +39,24 @@ fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
 "
 echo "::endgroup::"
 
-echo "::group::Register card.css in angular.json#styles"
+echo "::group::Install Angular deps"
+npm install
+echo "::endgroup::"
+
+echo "::group::Stage card.css from node_modules into src/ and register it"
 # card@2.5.x's lib/card.js does `require('./card.css')` at module top level
-# for runtime style injection. Angular 14-16's webpack browser builder fails
-# to parse the CSS without an explicit loader. Adding it to angular.json's
-# styles array hands it to Angular CLI's stylesheet pipeline (handled by
-# both webpack browser builder and esbuild application builder).
+# for runtime style injection. The webpack browser builder used by Angular
+# 14-16 trips on the leading `@` -- and registering the file directly from
+# node_modules in angular.json#styles still fails on 15/16 even though the
+# path is tagged `?ngGlobalStyle` (the loader chain skips full CSS handling
+# for node_modules entries). Copying the file into src/ sidesteps the
+# node_modules-specific path entirely.
+mkdir -p src/styles
+cp node_modules/card/lib/card.css src/styles/card.css
 node -e "
 const fs = require('fs');
 const config = JSON.parse(fs.readFileSync('angular.json', 'utf8'));
-const cardCss = 'node_modules/card/lib/card.css';
+const cardCss = 'src/styles/card.css';
 for (const projName of Object.keys(config.projects || {})) {
   const arch = (config.projects[projName].architect || {}).build;
   if (!arch) continue;
@@ -60,10 +68,6 @@ for (const projName of Object.keys(config.projects || {})) {
 }
 fs.writeFileSync('angular.json', JSON.stringify(config, null, 2));
 "
-echo "::endgroup::"
-
-echo "::group::Install Angular deps"
-npm install
 echo "::endgroup::"
 
 echo "::group::Install @datasage/ngx-card"
